@@ -73,6 +73,8 @@ show_next=[]
 score=0
 gameover=False
 colour=["maroon4","brown2","goldenrod","darkgreen","cyan4","gray","pink"]
+blinking=False
+blinking_time=0
 
 def Collision_Detection(block_x,block_y,block_type):
     global block
@@ -94,9 +96,30 @@ def gameover():
             if field[y][x]==1:
                 return True
     return False
+def blinking_block():
+    global field, score,blinking_time,blinking,blinking_delete
+    y_1st = 23
+    if blinking_time <= 0:
+        while y_1st >= 4:
+            blinking_delete = True
+            for x in range(10):
+                if field[y_1st][x] == 0:
+                    blinking_delete = False
+            if blinking_delete == True:
+                for x in range(10):
+                    blinking_field[y_1st][x]=1
+                blinking = True
+            y_1st -= 1
+        if blinking == True:
+            blinking_time = 10
+
+def blinking_reset():
+    for x in range(10):
+        for y in range(24):
+            blinking_field[y][x]=0
 
 def delete_block():
-    global field, score
+    global field, score,blinking
     y_1st=23
     while y_1st>=4:
         delete = True
@@ -166,10 +189,46 @@ def draw_field():
     global field,block_x,block_y,block_size
     for x in range(10):
         for y in range (4,24):
-            if field[y][x] > 0:
-                canvas.create_rectangle(x*block_size,(y-4)*block_size,x*block_size+block_size,(y-4)*block_size+block_size,fill=colour[field[y][x]-1], tag="FIELD")
+            if blinking == False:
+                if field[y][x] > 0:
+                    canvas.create_rectangle(x*block_size,(y-4)*block_size,x*block_size+block_size,(y-4)*block_size+block_size,fill=colour[field[y][x]-1], tag="FIELD")
+            elif blinking == True:
+                if field[y][x] > 0:
+                    if blinking_field[y][x] != 1:
+                        canvas.create_rectangle(x * block_size, (y - 4) * block_size, x * block_size + block_size,
+                                        (y - 4) * block_size + block_size, fill=colour[field[y][x] - 1], tag="FIELD")
+                    elif blinking_field[y][x] == 1 and blinking_time%3==0:
+                        canvas.create_rectangle(x * block_size, (y - 4) * block_size, x * block_size + block_size,
+                                                (y - 4) * block_size + block_size, fill=colour[field[y][x] - 1],
+                                                tag="FIELD")
 
 field=[
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0],
+]
+blinking_field=[
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -237,7 +296,7 @@ def draw_block():
     elif pause == False:
         canvas.delete(pause)
 def main():
-    global block_y,time,keyoff,bottom,block,pause,key
+    global block_y,time,keyoff,bottom,block,pause,key,blinking,blinking_time
     bottom = bottom + 1
     if key == "p" and bottom >2:
         pause =not pause
@@ -246,13 +305,22 @@ def main():
     next()
     if gameover()==False and pause!=True:
         move_block()
-        time = time+1
+        if blinking_time > 0:
+            blinking_time = blinking_time - 1
+            draw_field()
+            if blinking_time <= 0:
+                blinking = False
+                delete_block()
+                draw_field()
+                blinking_reset()
+        else:
+            time = time + 1
         if time==8:
            if Collision_Detection(block_x,block_y+1,block_type) == False:
                 block_y = block_y + 1
            else:
                field_block()
-               delete_block()
+               blinking_block()
                draw_field()
                gameover()
            time = 0
