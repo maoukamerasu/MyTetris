@@ -156,14 +156,14 @@ def create_block(block_index):
         block = block_6
     return block
 def block_change():
-    global block, block_type,block_0,block_1,block_2,block_3,block_4,block_5,block_6,next_block,block_colour,colour_value,next_calour_value
+    global block, block_type,block_0,block_1,block_2,block_3,block_4,block_5,block_6,next_block,block_colour,colour_value,next_colour_value
     block_index = next_block
     block=[]
     block=create_block(block_index)
     block_type=0
     next_block=random.randint(0,6)
-    colour_value=next_calour_value
-    next_calour_value=next_block
+    colour_value=next_colour_value
+    next_colour_value=next_block
 
 def field_block():
     global block_x, block_y,field,block_type,block
@@ -183,7 +183,7 @@ def next():
     for x in range(4):
         for y in range(4):
             if show_next[y][x] == 1:
-                  canvas.create_rectangle(320+x*block_size,100+y*block_size,320+x*block_size+block_size,100+y*block_size+block_size,fill=colour[next_calour_value],tag="BLOCK")
+                  canvas.create_rectangle(320+x*block_size,100+y*block_size,320+x*block_size+block_size,100+y*block_size+block_size,fill=colour[next_colour_value],tag="BLOCK")
 def draw_field():
     canvas.delete("FIELD")
     global field,block_x,block_y,block_size
@@ -201,7 +201,19 @@ def draw_field():
                         canvas.create_rectangle(x * block_size, (y - 4) * block_size, x * block_size + block_size,
                                                 (y - 4) * block_size + block_size, fill=colour[field[y][x] - 1],
                                                 tag="FIELD")
-
+def reset(event):
+    global score, next_colour_value, block_y,gameover
+    for x in range(10):
+        for y in range(24):
+            field[y][x]=0
+    score = 0
+    canvas.delete("SCORE")
+    canvas.create_text(400, 80, text=score, fill="white", font=("NewRamon", 25), tag="SCORE")
+    next_colour_value = next_block
+    block_change()
+    draw_field()
+    block_y = -4
+    canvas.delete("GameOver")
 field=[
     [0,0,0,0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0,0,0,0],
@@ -297,6 +309,9 @@ def draw_block():
         canvas.delete(pause)
 def main():
     global block_y,time,keyoff,bottom,block,pause,key,blinking,blinking_time
+    resetButton = tkinter.Button(root, text='reset',width=6,height=3)
+    resetButton.place(x=360, y=500)
+    resetButton.bind("<Button-1>",reset)
     bottom = bottom + 1
     if key == "p" and bottom >2:
         pause =not pause
@@ -325,12 +340,12 @@ def main():
                     gameover()
                 time = 0
     elif gameover()==True:
-          canvas.create_text(150, 250, text="Game Over", fill="white", font=("New Roman", 30))
+          canvas.create_text(150, 250, text="Game Over", fill="white", font=("New Roman", 30),tag="GameOver")
     root.after(60, main)
 next_block=random.randint(0, 6)
 pause=False
 global block_colour
-next_calour_value = next_block
+next_colour_value = next_block
 block_change()
 main()
 root.mainloop()
