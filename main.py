@@ -304,7 +304,6 @@ def main():
     draw_block()
     next()
     if gameover()==False and pause!=True:
-        move_block()
         if blinking_time > 0:
             blinking_time = blinking_time - 1
             draw_field()
@@ -314,16 +313,17 @@ def main():
                 draw_field()
                 blinking_reset()
         else:
+            move_block()
             time = time + 1
-        if time==8:
-           if Collision_Detection(block_x,block_y+1,block_type) == False:
-                block_y = block_y + 1
-           else:
-               field_block()
-               blinking_block()
-               draw_field()
-               gameover()
-           time = 0
+            if time==8:
+                if Collision_Detection(block_x,block_y+1,block_type) == False:
+                    block_y = block_y + 1
+                else:
+                    field_block()
+                    blinking_block()
+                    draw_field()
+                    gameover()
+                time = 0
     elif gameover()==True:
           canvas.create_text(150, 250, text="Game Over", fill="white", font=("New Roman", 30))
     root.after(60, main)
