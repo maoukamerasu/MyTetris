@@ -307,8 +307,30 @@ def draw_block():
         canvas.create_text(150, 250, text="PAUSE", fill="white", font=("New Roman", 30), tag="pause_text")
     elif pause == False:
         canvas.delete(pause)
+def speedchange():
+    global speed,speed_get
+    speed=tkinter.IntVar()
+    speed.set(0)
+    canvas.create_text(345, 240, text="Speed", fill="white", font=("NewRamon", 18))
+    speed_normal=tkinter.Radiobutton(value=0,variable=speed,text="normal")
+    speed_normal.place(x=320,y=260)
+    speed_hard = tkinter.Radiobutton(value=1, variable=speed, text="fast")
+    speed_hard.place(x=320, y=280)
+    speed_veryhard = tkinter.Radiobutton(value=2, variable=speed, text="veryfast")
+    speed_veryhard.place(x=320, y=300)
+    speed_lunatic = tkinter.Radiobutton(value=3, variable=speed, text="lunatic")
+    speed_lunatic.place(x=320, y=320)
 def main():
-    global block_y,time,keyoff,bottom,block,pause,key,blinking,blinking_time
+    global block_y,time,keyoff,bottom,block,pause,key,blinking,blinking_time,speed
+    speed_get = speed.get()
+    if speed_get == 0:
+        blockspeed = 8
+    if speed_get == 1:
+        blockspeed = 5
+    if speed_get == 2:
+        blockspeed = 3
+    if speed_get == 3:
+        blockspeed = 2
     resetButton = tkinter.Button(root, text='reset',width=6,height=3)
     resetButton.place(x=360, y=500)
     resetButton.bind("<Button-1>",reset)
@@ -330,7 +352,7 @@ def main():
         else:
             move_block()
             time = time + 1
-            if time==8:
+            if time>=blockspeed:
                 if Collision_Detection(block_x,block_y+1,block_type) == False:
                     block_y = block_y + 1
                 else:
@@ -347,5 +369,6 @@ pause=False
 global block_colour
 next_colour_value = next_block
 block_change()
+speedchange()
 main()
 root.mainloop()
